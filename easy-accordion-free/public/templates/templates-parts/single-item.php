@@ -7,6 +7,10 @@
  * @package easy_accordion_free
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	die;
+} // Cannot access directly.
+
 ?>
 <!-- Start accordion card div. -->
 <div class="ea-card <?php echo esc_attr( $accordion_mode['expand_class'] . ' ' . $accordion_item_class ); ?>">
@@ -18,7 +22,7 @@
 		// Add icon and title.
 		echo wp_kses_post( $eap_icon_markup . $content_title );
 		?>
-		</a> <!-- Close anchor tag for header. -->
+		</a><!-- Close anchor tag for header. -->
 	</<?php echo esc_attr( $eap_title_tag ); ?>>	<!-- Close header tag. -->
 	<!-- Start collapsible content div. -->
 	<div class="sp-collapse spcollapse <?php echo esc_attr( $accordion_mode['open_first'] ); ?>" id="collapse<?php echo esc_attr( $post_id . $key ); ?>" <?php echo wp_kses_post( $eap_single_collapse ); ?> role="region" aria-labelledby="ea-header-<?php echo esc_attr( $post_id . $key ); ?>">  <!-- Content div. -->
@@ -40,6 +44,6 @@
 			esc_html_e( 'No Content', 'easy-accordion-free' );
 		}
 		?>
-		</div> <!-- Close content div. -->
-	</div> <!-- Close collapse div. -->
-</div> <!-- Close card div. -->
+		</div><!-- Close content div. -->
+	</div><!-- Close collapse div. -->
+</div><!-- Close card div. -->

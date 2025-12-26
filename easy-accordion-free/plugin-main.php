@@ -2,10 +2,12 @@
 /**
  * Plugin name: Easy Accordion
  * Plugin URI:  https://easyaccordion.io/?ref=1
- * Description: The best Responsive and Touch-friendly drag & drop <strong>Accordion FAQ</strong> builder plugin for WordPress.
+ * Description: Easy Accordion is a responsive Accordion and FAQ builder plugin for WordPress. Create unlimited accordions, FAQ sections, and WooCommerce Product FAQs with a simple drag-and-drop interface—no coding required.
  * Author:      ShapedPlugin LLC
  * Author URI:  https://shapedplugin.com/
- * Version:     3.0.1
+ * License:     GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * Version:     3.0.7
  * Text Domain: easy-accordion-free
  * Domain Path: /languages/
  *
@@ -22,11 +24,17 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @return boolean
  */
-function is_easy_accordion_pro() {
-	include_once ABSPATH . 'wp-admin/includes/plugin.php';
-	if ( ! ( is_plugin_active( 'easy-accordion-pro/easy-accordion-pro.php' ) || is_plugin_active_for_network( 'easy-accordion-pro/easy-accordion-pro.php' ) ) ) {
+function is_easy_accordion_pro_active() {
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+	if (
+		is_plugin_active( 'easy-accordion-pro/easy-accordion-pro.php' ) ||
+		is_plugin_active_for_network( 'easy-accordion-pro/easy-accordion-pro.php' )
+	) {
 		return true;
 	}
+
+	return false;
 }
 
 /**
@@ -51,7 +59,7 @@ class SP_EASY_ACCORDION_FREE {
 	 *
 	 * @var string
 	 */
-	public $version = '3.0.1';
+	public $version = '3.0.7';
 
 	/**
 	 * The name of the plugin.
@@ -206,10 +214,6 @@ class SP_EASY_ACCORDION_FREE {
 		$this->loader->add_action( 'admin_menu', $plugin_cpt, 'add_faq_submenu' );
 		$this->loader->add_action( 'admin_notices', $plugin_review_notice, 'display_admin_notice' );
 		$this->loader->add_action( 'wp_ajax_sp-eafree-never-show-review-notice', $plugin_review_notice, 'dismiss_review_notice' );
-		// Admin offer banner.
-		$plugin_offer_banner = new Easy_Accordion_Free_Offer_Banner( SP_PLUGIN_NAME, SP_EA_VERSION );
-		$this->loader->add_action( 'admin_notices', $plugin_offer_banner, 'display_admin_offer_banner' );
-		$this->loader->add_action( 'wp_ajax_sp_eafree-hide-offer-banner', $plugin_offer_banner, 'dismiss_offer_banner' );
 	}
 
 	/**
@@ -240,15 +244,11 @@ class SP_EASY_ACCORDION_FREE {
 		require_once SP_EA_INCLUDES . '/class-easy-accordion-free-post-types.php';
 		require_once SP_EA_INCLUDES . '/class-easy-accordion-free-product-tab.php';
 		require_once SP_EA_PATH . '/admin/class-easy-accordion-free-admin.php';
-		require_once SP_EA_PATH . '/admin/help-page/help-page.php';
 		require_once SP_EA_PATH . '/admin/views/models/classes/setup.class.php';
-		require_once SP_EA_PATH . '/admin/views/metabox-config.php';
-		require_once SP_EA_PATH . '/admin/views/option-config.php';
-		require_once SP_EA_PATH . '/admin/views/tools-config.php';
+		require_once SP_EA_PATH . '/admin/help-page/help-page.php';
 		require_once SP_EA_PATH . '/admin/views/notices/review.php';
 		require_once SP_EA_PATH . '/public/scripts.php';
 		require_once SP_EA_PATH . '/public/eap-frontend.php';
-		require_once SP_EA_PATH . '/admin/views/notices/offer-banner.php';
 		require_once SP_EA_PATH . '/includes/class-easy-accordion-import-export.php';
 		require_once SP_EA_PATH . '/admin/preview/class-easy-accordion-free-preview.php';
 		require_once SP_EA_PATH . '/admin/class-easy-accordion-free-gutenberg-block.php';
@@ -293,8 +293,17 @@ class SP_EASY_ACCORDION_FREE {
 function sp_easy_accordion() {
 	$plugin = SP_EASY_ACCORDION_FREE::init();
 	$plugin->loader->run();
+
+	if ( ! defined( 'SHAPEDPLIUGIN_OFFER_BANNER_LOADED' ) ) {
+		define( 'SHAPEDPLIUGIN_OFFER_BANNER_LOADED', true );
+
+		/**
+		 * The file is responsible for generating admin offer banner.
+		 */
+		include_once plugin_dir_path( __FILE__ ) . 'admin/views/notices/offer-banner.php';
+	}
 }
 
-if ( is_easy_accordion_pro() ) {
+if ( ! is_easy_accordion_pro_active() ) {
 	sp_easy_accordion();
 }

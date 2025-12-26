@@ -88,9 +88,6 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 			// set constants.
 			self::constants();
 
-			// translate.
-			add_action( 'init', array( 'SP_EAP', 'set_locale' ) );
-
 			// include files.
 			self::includes();
 
@@ -99,7 +96,6 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 			add_action( 'switch_theme', array( 'SP_EAP', 'setup' ) );
 			add_action( 'admin_enqueue_scripts', array( 'SP_EAP', 'add_admin_enqueue_scripts' ), 20 );
 			add_action( 'admin_head', array( 'SP_EAP', 'add_admin_head_css' ), 99 );
-
 		}
 
 		/**
@@ -108,6 +104,10 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 		 * @return void
 		 */
 		public static function setup() {
+			// Include plugin meta field config file.
+			self::include_plugin_file( 'configs/option-config.php' );
+			self::include_plugin_file( 'configs/metabox-config.php' );
+			self::include_plugin_file( 'configs/tools-config.php' );
 
 			// setup options.
 			$params = array();
@@ -140,30 +140,12 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 						$params['args']       = $value;
 						$params['sections']   = self::$args['sections'][ $key ];
 						self::$inited[ $key ] = true;
-
 						SP_EAP_Metabox::instance( $key, $params );
-
 					}
 				}
 			}
 
 			do_action( 'eapro_loaded' );
-
-		}
-
-		/**
-		 * Define the locale for this plugin for internationalization.
-		 *
-		 * Uses the Easy_Accordion_Free_I18n class in order to set the domain and to register the hook
-		 * with WordPress.
-		 *
-		 * @since    2.0.0
-		 * @access   private
-		 */
-		public static function set_locale() {
-			require_once SP_EA_INCLUDES . '/class-easy-accordion-free-i18n.php';
-			$plugin_i18n = new Easy_Accordion_Free_I18n();
-			$plugin_i18n->load_plugin_textdomain();
 		}
 
 		/**
@@ -211,7 +193,7 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 		public static function constants() {
 
 			// we need this path-finder code for set URL of framework.
-			$dirname        = wp_normalize_path( dirname( dirname( __FILE__ ) ) );
+			$dirname        = wp_normalize_path( dirname( __DIR__ ) );
 			$theme_dir      = wp_normalize_path( get_parent_theme_file_path() );
 			$plugin_dir     = wp_normalize_path( WP_PLUGIN_DIR );
 			$located_plugin = ( preg_match( '#' . self::sanitize_dirname( $plugin_dir ) . '#', self::sanitize_dirname( $dirname ) ) ) ? true : false;
@@ -223,7 +205,6 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 
 			self::$dir = $dirname;
 			self::$url = $directory_uri . $foldername;
-
 		}
 
 		/**
@@ -268,7 +249,6 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 				return self::$dir . '/' . $file;
 
 			}
-
 		}
 
 		/**
@@ -318,7 +298,6 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 			self::include_plugin_file( 'classes/fields.class.php' );
 			self::include_plugin_file( 'classes/options.class.php' );
 			self::include_plugin_file( 'classes/metabox.class.php' );
-
 		}
 
 		/**
@@ -362,7 +341,6 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 					}
 				}
 			}
-
 		}
 
 		/**
@@ -375,7 +353,7 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 
 			$current_screen        = get_current_screen();
 			$the_current_post_type = $current_screen->post_type;
-			if ( 'sp_easy_accordion' === $the_current_post_type ) {
+			if ( 'sp_easy_accordion' === $the_current_post_type || in_array( $hook, array( 'sp_easy_accordion_page_eap_form', 'sp_easy_accordion_page_eap_tools', 'sp_easy_accordion_page_eap_settings', 'sp_easy_accordion_page_eap_analytics' ), true ) ) {
 
 				// check for developer mode.
 				$min = ( apply_filters( 'eapro_dev_mode', false ) || WP_DEBUG ) ? '' : '.min';
@@ -387,13 +365,7 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 				wp_enqueue_style( 'wp-color-picker' );
 				wp_enqueue_script( 'wp-color-picker' );
 
-				// font awesome 4 and 5.
-				if ( apply_filters( 'eapro_fa4', false ) ) {
-					wp_enqueue_style( 'eapro-fa', SP_EA_URL . 'public/assets/css/font-awesome' . $min . '.css', array(), SP_EA_VERSION, 'all' );
-				} else {
-					wp_enqueue_style( 'eapro-fa5', 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all' . $min . '.css', array(), SP_EA_VERSION, 'all' );
-					wp_enqueue_style( 'eapro-fa5-v4-shims', 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/v4-shims' . $min . '.css', array(), SP_EA_VERSION, 'all' );
-				}
+				wp_enqueue_style( 'eapro-font-awesome-icons', self::include_plugin_url( 'assets/css/font-awesome.min.css' ), array(), self::$version, 'all' );
 
 				// framework core styles.
 				wp_enqueue_style( 'eapro', self::include_plugin_url( 'assets/css/eapro' . $min . '.css' ), array(), SP_EA_VERSION, 'all' );
@@ -452,7 +424,6 @@ if ( ! class_exists( 'SP_EAP' ) ) {
 
 				do_action( 'eapro_enqueue' );
 			}
-
 		}
 
 		/**
@@ -487,7 +458,6 @@ if ( ! class_exists( 'SP_EAP' ) ) {
         </style>';
 
 			}
-
 		}
 
 		/**

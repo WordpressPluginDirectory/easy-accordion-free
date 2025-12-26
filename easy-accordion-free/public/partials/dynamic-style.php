@@ -9,6 +9,10 @@
  * @subpackage easy-accordion-free/public
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	die;
+} // Cannot access directly.
+
 $eap_preloader         = isset( $shortcode_data['eap_preloader'] ) ? $shortcode_data['eap_preloader'] : false;
 $eap_animation_time    = isset( $shortcode_data['eap_animation_time'] ) ? $shortcode_data['eap_animation_time'] : '';
 $accordion_layout      = isset( $shortcode_data['eap_accordion_layout'] ) ? $shortcode_data['eap_accordion_layout'] : 'vertical';
@@ -26,11 +30,11 @@ $acc_section_title_margin_bottom = isset( $shortcode_data['section_title_margin'
 $eap_description_bg                 = isset( $shortcode_data['eap_description_bg_color'] ) ? $shortcode_data['eap_description_bg_color'] : '';
 $eap_content_color             = isset( $shortcode_data['eap_dsc_color'] ) ? $shortcode_data['eap_dsc_color'] : '#444';
 $eap_accordion_fillspace            = isset( $shortcode_data['eap_accordion_fillspace'] ) ? $shortcode_data['eap_accordion_fillspace'] : '';
-$old_eap_accordion_fillspace_height = isset( $shortcode_data['eap_accordion_fillspace_height'] ) ? $shortcode_data['eap_accordion_fillspace_height'] : '200';
+$old_eap_accordion_fillspace_height = isset( $shortcode_data['eap_accordion_fillspace_height'] ) && is_numeric( $shortcode_data['eap_accordion_fillspace_height'] ) ? $shortcode_data['eap_accordion_fillspace_height'] : '200';
 $eap_accordion_fillspace_height     = isset( $shortcode_data['eap_accordion_fillspace_height']['all'] ) ? $shortcode_data['eap_accordion_fillspace_height']['all'] : $old_eap_accordion_fillspace_height;
 $eap_ex_icon_position               = isset( $shortcode_data['eap_icon_position'] ) ? $shortcode_data['eap_icon_position'] : '';
 $eap_icon_color                     = isset( $shortcode_data['eap_icon_color_set'] ) && is_string( $shortcode_data['eap_icon_color_set'] ) ? $shortcode_data['eap_icon_color_set'] : '#444';
-$old_eap_icon_size                  = isset( $shortcode_data['eap_icon_size'] ) ? $shortcode_data['eap_icon_size'] : '16';
+$old_eap_icon_size                  = isset( $shortcode_data['eap_icon_size'] ) && is_numeric( $shortcode_data['eap_icon_size'] ) ? $shortcode_data['eap_icon_size'] : '16';
 $eap_icon_size                      = isset( $shortcode_data['eap_icon_size']['all'] ) ? $shortcode_data['eap_icon_size']['all'] : $old_eap_icon_size;
 $eap_header_bg                      = isset( $shortcode_data['eap_header_bg_color'] ) && is_string( $shortcode_data['eap_header_bg_color'] ) ? $shortcode_data['eap_header_bg_color'] : '#eee';
 $eap_border                         = isset( $shortcode_data['eap_border_css'] ) ? $shortcode_data['eap_border_css'] : '';
